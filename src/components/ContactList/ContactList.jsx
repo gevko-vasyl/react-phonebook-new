@@ -3,7 +3,7 @@ import ContactItem from "components/ContactList/ContactItem";
 
 export default class ContactList extends Component {
   render() {
-    const { contacts } = this.props;
+    const { contacts, onDelete } = this.props;
     // console.log(contacts);
     return (
       <div>
@@ -11,7 +11,12 @@ export default class ContactList extends Component {
 
         <ul>
           {contacts.map(({ name, number }) => (
-            <ContactItem key={number} name={name} number={number} />
+            <ContactItem
+              key={number}
+              name={name}
+              number={number}
+              onDelete={onDelete}
+            />
           ))}
         </ul>
       </div>

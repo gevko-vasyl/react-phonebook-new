@@ -18,10 +18,34 @@ export default class App extends Component {
       name: e.target.name.value,
       number: e.target.number.value,
     };
-    // console.log(newContact);
+    if (!this.preventDuplicateContact(newContact)) {
+      this.setState((prevState) => ({
+        contacts: [...prevState.contacts, newContact],
+      }));
+    }
+  };
+
+  deleteContact = (id) => {
     this.setState((prevState) => ({
-      contacts: [...prevState.contacts, newContact],
+      contacts: prevState.contacts.filter(({ number }) => number !== id),
     }));
+  };
+
+  preventDuplicateContact = (newContact) => {
+    const normalizedNewContactName = newContact.name.toLowerCase();
+    const newContactNumber = newContact.number;
+    const contatcsNamesArray = this.state.contacts.map((el) =>
+      el.name.toLowerCase()
+    );
+    const contatcsNumbersArray = this.state.contacts.map((el) => el.number);
+
+    const isDuplicate =
+      contatcsNamesArray.includes(normalizedNewContactName) ||
+      contatcsNumbersArray.includes(newContactNumber);
+    if (isDuplicate) {
+      alert("Duplicate contact");
+    }
+    return isDuplicate;
   };
 
   handleFilter = (e) => {
@@ -29,24 +53,28 @@ export default class App extends Component {
     this.setState({ filter: filterValue });
   };
 
-  // showFilteredContacts = () => {
-  //   const contacts = this.state.contacts;
-  //   const names = contacts.map((contact) => contact.name);
-  //   console.log(names);
-
-  //   // console.log(filteredContacts);
-  // };
+  showFiltered = () => {
+    const { filter, contacts } = this.state;
+    const normalize = filter.toLowerCase();
+    const filteredContacts = contacts.filter((el) =>
+      el.name.toLowerCase().includes(normalize)
+    );
+    return filteredContacts;
+  };
 
   render() {
-    const { contacts, filter } = this.state;
-    // const filteredContacts = this.showFilteredContacts();
+    const visibleContacts = this.showFiltered();
 
+    this.showFiltered();
     return (
       <div>
         <Title />
         <ContactForm addContact={this.addContact} />
         <Filter onFilterChange={this.handleFilter} />
-        <ContactList contacts={contacts}></ContactList>
+        <ContactList
+          contacts={visibleContacts}
+          onDelete={this.deleteContact}
+        ></ContactList>
       </div>
     );
   }
